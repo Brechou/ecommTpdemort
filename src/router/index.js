@@ -42,7 +42,7 @@ const routes = [
     // route dynamique pour détails produit
     path:'/products/:id',
     name:'productDetails',
-    component: ProductDetailsView
+    component: ProductDetailsView,
   },
 ]
 

@@ -1,13 +1,38 @@
-<script setup></script>
+<script setup>
+
+</script>
 
 <template>
+  <nav id="divSide">
+    <RouterLink :to="{name:'homeView'}" class="lien">Acceuil</RouterLink>
+    <RouterLink :to="{name:'productsView'}" class="lien">Produits</RouterLink>
+    <!-- <RouterLink class="lien">Panier🛒</RouterLink> -->
+  </nav>
   <div>
     <div>
-      <!-- <RouterLink :to="{name:'homeView'}"></RouterLink> -->
+      <RouterView />
     </div>
   </div>
-  <h1>You did it!</h1>
-  <RouterView />
 </template>
 
-<style scoped></style>
+<style scoped>
+
+div{
+  font-family: cursive;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.13);
+  margin-top:0px ;
+}
+nav{
+  margin: 0px;
+  background-color: rgba(0, 0, 0, 0.781);
+  height: 3.5rem;
+  text-align: center;
+}
+.lien{
+  margin-inline: 2rem;
+  font-size: 2rem;
+  color: white;
+  font-family: cursive;
+}
+</style>
