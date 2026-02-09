@@ -11,7 +11,7 @@ onMounted(async()=>{
     const papa = await fetch('https://dummyjson.com/products');
     const mama = await papa.json();
     produits.value = mama.products;
-    console.log(produits.value);
+    // console.log(produits.value);
 })
 // console.log(produits.value);
 
@@ -42,7 +42,7 @@ main{
 .divProd{
     font-family: cursive;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr ;
+    grid-template-columns: 1fr 1fr 1fr;
     justify-content: center;
     row-gap: 2rem;
     column-gap: -8rem;

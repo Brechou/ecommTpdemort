@@ -44,6 +44,7 @@ const routes = [
     name:'productDetails',
     component: ProductDetailsView,
   },
+  
 ]
 
 const router = createRouter({
