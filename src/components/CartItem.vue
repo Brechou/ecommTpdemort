@@ -1,75 +1,84 @@
 <script setup>
-
-</script>
-
-<template>
-  <h1>CartItem!</h1>
-  <p>
-    
-  </p>
-</template>
-
-<style scoped>
-
-</style>
-<!-- 
-<script setup>
-import { ref, watch } from "vue";
-
-defineProps({
+const props = defineProps({
   product: Object,
-  quantity: Number
+  quantity: {
+    type: Number,
+    required: true,
+  },
 })
 
-const qty = ref(quantity)
-
-// Sauvegarde la quantité dans localStorage
-function saveQuantity(productId, qty) {
-  const panier = JSON.parse(localStorage.getItem('panier') || '{}')
-  if (qty > 0) panier[productId] = qty
-  else delete panier[productId]
-  localStorage.setItem('panier', JSON.stringify(panier))
-}
-
-watch(qty, (newQty) => {
-  saveQuantity(product.id, newQty)
-})
+const emit = defineEmits(['updateQuantity', 'remove'])
 
 function increment() {
-  qty.value++
+  emit('updateQuantity', props.product.id, props.quantity + 1)
 }
 
 function decrement() {
-  qty.value = qty.value > 1 ? qty.value - 1 : 0
+  const next = props.quantity - 1
+  if (next > 0) {
+    emit('updateQuantity', props.product.id, next)
+  } else {
+    emit('remove', props.product.id)
+  }
+}
+
+function removeItem() {
+  emit('remove', props.product.id)
 }
 </script>
 
 <template>
-  <div style="display:flex; align-items:center; justify-content:space-between; padding:0.5rem; border-bottom:1px solid #ccc;">
-    <div style="display:flex; align-items:center; gap:1rem;">
-      <img :src="product.thumbnail" width="50" />
+  <div class="cart-item">
+    <div class="item-left">
+      <img :src="product.thumbnail" :alt="product.title" />
       <div>
-        <strong>{{ product.title }}</strong> <br>
-        ${{ product.price }} x {{ qty }}
+        <strong>{{ product.title }}</strong>
+        <p>${{ product.price }} x {{ quantity }}</p>
       </div>
     </div>
-    <div>
+    <div class="item-actions">
       <button @click="decrement">-</button>
+      <span>{{ quantity }}</span>
       <button @click="increment">+</button>
+      <button class="remove-button" @click="removeItem">Supprimer</button>
     </div>
   </div>
 </template>
 
 <style scoped>
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.item-left img {
+  width: 80px;
+  border-radius: 1rem;
+}
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
 button {
-  width: 2rem;
-  height: 2rem;
-  cursor: pointer;
-  border-radius: 0.3rem;
   border: none;
-  background-color: green;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  background-color: #16a085;
   color: white;
-  margin-left: 0.2rem;
+}
+.remove-button {
+  background-color: #e74c3c;
 }
 </style>
- -->

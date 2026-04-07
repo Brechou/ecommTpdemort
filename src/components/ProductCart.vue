@@ -1,89 +1,100 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCart } from '../composables/useCart'
+
+const props = defineProps({
+  product: Object,
+})
 
 const router = useRouter()
+const { cartItems, addItem, setQuantity, removeItem } = useCart()
 
-defineProps({
-  product: Object
+const quantity = computed(() => {
+  return cartItems.value[String(props.product.id)] || 0
 })
-function detailFunc(product) {
+
+function detailFunc() {
   router.push(`/products/${product.id}`)
 }
 
-// état local pour le panier
-const quantity = ref(0)
-
 function addPanier() {
-  quantity.value = 1
+  addItem(props.product, 1)
 }
 
-// augmenter / diminuer
 function increment() {
-  quantity.value += + 1
+  setQuantity(props.product.id, quantity.value + 1)
 }
 
 function decrement() {
-  quantity.value --
+  const next = quantity.value - 1
+  if (next > 0) {
+    setQuantity(props.product.id, next)
+  } else {
+    removeItem(props.product.id)
+  }
 }
-
 </script>
 
 <template>
-  <div>
-    <img :src="product.thumbnail" :alt="product.title" @click="detailFunc(product)">
+  <div class="product-card">
+    <img :src="product.thumbnail" :alt="product.title" @click="detailFunc" />
     <h3>{{ product.title }}</h3>
-    <strong>price:${{ product.price }}</strong> <br>
+    <strong>Prix : ${{ product.price }}</strong><br>
     <strong class="ss">⭐{{ product.rating }}</strong>
 
     <button v-if="quantity === 0" @click="addPanier">Ajouter au panier</button>
-
-    <div v-else style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-      <button style="color: white;" @click="decrement">-</button>
+    <div v-else class="quantity-row">
+      <button @click="decrement">-</button>
       <span>{{ quantity }}</span>
-      <button style="color: white;"  @click="increment">+</button>
+      <button @click="increment">+</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-div {
-  width: 25rem;
+.product-card {
   background-color: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
   display: grid;
-  grid-template-columns: 1fr;
-  position: relative;
-  border-radius: 0.7rem;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-inline: auto;
+  gap: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
-
-div:hover {
-  transform: translateY(-3%);
+.product-card:hover {
+  transform: translateY(-5px);
+  transition: transform 0.2s ease;
 }
-
 img {
-  width: 10rem;
-  margin-inline: auto;
-  margin-bottom: -0.4rem;
+  width: 100%;
+  max-width: 180px;
+  margin: 0 auto;
   cursor: pointer;
 }
-
 button {
-  width: 15rem;
-  height: 2rem;
+  width: 100%;
+  max-width: 180px;
+  height: 2.4rem;
   font-family: cursive;
-  font-style: italic;
-  border-style: none;
-  background-color: rgba(21, 196, 15, 0.863);
-  border-radius: 2rem;
-  position: relative;
-  margin-inline: auto;
+  border: none;
+  background-color: rgba(21, 196, 15, 0.9);
+  border-radius: 1.2rem;
+  color: white;
   cursor: pointer;
 }
-
+.quantity-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+.quantity-row button {
+  width: 3rem;
+  background-color: #16a085;
+}
 .ss {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 </style>
 
