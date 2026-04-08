@@ -11,6 +11,7 @@ const { isLoggedIn, user, logout } = useAuth()
 const { notifications, removeNotification } = useToast()
 
 const showLogoutModal = ref(false)
+const mobileMenuOpen = ref(false)
 
 function handleLogoutClick() {
   showLogoutModal.value = true
@@ -24,6 +25,10 @@ function confirmLogout() {
 function cancelLogout() {
   showLogoutModal.value = false
 }
+
+function toggleMobileMenu() {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+}
 </script>
 
 <template>
@@ -34,41 +39,49 @@ function cancelLogout() {
         Accueil
       </RouterLink>
       
-      <!-- Liens visibles seulement si connecté -->
-      <template v-if="isLoggedIn">
-        <RouterLink :to="{name:'productsView'}" class="nav-link">
-          <span class="nav-icon">🛍️</span>
-          Produits
-        </RouterLink>
-        <RouterLink :to="{name:'cartView'}" class="nav-link cart-link">
-          <span class="nav-icon">🛒</span>
-          Panier
-          <span v-if="totalQuantity > 0" class="cart-badge">{{ totalQuantity }}</span>
-        </RouterLink>
-      </template>
+      <!-- Mobile menu button -->
+      <button class="mobile-menu-btn" @click="toggleMobileMenu" :class="{ 'open': mobileMenuOpen }">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
 
-      <div class="nav-spacer"></div>
+      <!-- Navigation links -->
+      <div class="nav-links" :class="{ 'open': mobileMenuOpen }">
+        <!-- Liens visibles seulement si connecté -->
+        <template v-if="isLoggedIn">
+          <RouterLink :to="{name:'productsView'}" class="nav-link" @click="mobileMenuOpen = false">
+            <span class="nav-icon">🛍️</span>
+            Produits
+          </RouterLink>
+          <RouterLink :to="{name:'cartView'}" class="nav-link cart-link" @click="mobileMenuOpen = false">
+            <span class="nav-icon">🛒</span>
+            Panier
+            <span v-if="totalQuantity > 0" class="cart-badge">{{ totalQuantity }}</span>
+          </RouterLink>
+        </template>
 
-      <div v-if="!isLoggedIn" class="auth-links">
-        <RouterLink :to="{name:'inscription'}" class="nav-link btn-secondary">
-          <span class="nav-icon">📝</span>
-          Inscription
-        </RouterLink>
-        <RouterLink :to="{name:'connexion'}" class="nav-link btn-primary">
-          <span class="nav-icon">🔐</span>
-          Connexion
-        </RouterLink>
-      </div>
+        <div v-if="!isLoggedIn" class="auth-links">
+          <RouterLink :to="{name:'inscription'}" class="nav-link btn-secondary" @click="mobileMenuOpen = false">
+            <span class="nav-icon">📝</span>
+            Inscription
+          </RouterLink>
+          <RouterLink :to="{name:'connexion'}" class="nav-link btn-primary" @click="mobileMenuOpen = false">
+            <span class="nav-icon">🔐</span>
+            Connexion
+          </RouterLink>
+        </div>
 
-      <div v-else class="user-menu">
-        <span class="user-greeting">
-          <span class="nav-icon">👤</span>
-          {{ user.email }}
-        </span>
-        <button class="btn btn-danger logout-btn" @click="handleLogoutClick">
-          <span class="nav-icon">🚪</span>
-          Déconnexion
-        </button>
+        <div v-else class="user-menu">
+          <span class="user-greeting">
+            <span class="nav-icon">👤</span>
+            {{ user.email }}
+          </span>
+          <button class="btn btn-danger logout-btn" @click="handleLogoutClick">
+            <span class="nav-icon">🚪</span>
+            Déconnexion
+          </button>
+        </div>
       </div>
     </div>
   </nav>
@@ -121,31 +134,49 @@ function cancelLogout() {
   gap: var(--spacing-lg);
   flex-wrap: wrap;
   min-height: 60px;
+  position: relative;
 }
 
-.nav-link {
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  transition: all var(--transition-fast);
+.nav-links {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
 }
 
-.nav-link:hover {
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.mobile-menu-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  transform: translateY(-1px);
 }
 
-.nav-icon {
-  font-size: 1.1em;
+.hamburger-line {
+  width: 20px;
+  height: 2px;
+  background-color: white;
+  margin: 2px 0;
+  transition: all var(--transition-fast);
 }
 
-.cart-link {
-  position: relative;
+.mobile-menu-btn.open .hamburger-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.mobile-menu-btn.open .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.open .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
 }
 
 .cart-badge {
@@ -156,8 +187,9 @@ function cancelLogout() {
   font-size: 0.75rem;
   font-weight: bold;
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
   min-width: 18px;
   text-align: center;
 }
@@ -234,53 +266,66 @@ function cancelLogout() {
     min-height: 50px;
   }
 
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, #2c3e50 100%);
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+  }
+
+  .nav-links.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
   .nav-link {
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
     font-size: 0.9rem;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .nav-icon {
     font-size: 1em;
   }
 
-  .user-menu {
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  .user-greeting {
-    font-size: 0.85rem;
-  }
-
   .auth-links {
     flex-direction: column;
+    gap: var(--spacing-sm);
     width: 100%;
-    margin-top: var(--spacing-sm);
   }
 
   .auth-links .nav-link {
     justify-content: center;
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .nav-container {
-    flex-direction: column;
-    padding: var(--spacing-sm);
-  }
-
-  .nav-spacer {
-    display: none;
   }
 
   .user-menu {
+    flex-direction: column;
+    gap: var(--spacing-sm);
     width: 100%;
+  }
+
+  .user-greeting {
     justify-content: center;
   }
 
-  .auth-links {
+  .logout-btn {
     width: 100%;
+    justify-content: center;
   }
 }
 </style>

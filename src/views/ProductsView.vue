@@ -256,6 +256,7 @@ onMounted(async () => {
 
   .products-grid {
     grid-template-columns: 1fr;
+    justify-items: center;
   }
 
   .page-footer {

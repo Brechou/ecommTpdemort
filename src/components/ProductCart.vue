@@ -61,6 +61,8 @@ function decrement() {
   display: grid;
   gap: 1rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  max-width: 280px;
+  margin: 0 auto;
 }
 .product-card:hover {
   transform: translateY(-5px);
